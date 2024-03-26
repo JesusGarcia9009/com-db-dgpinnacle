@@ -35,7 +35,11 @@
 	VALUES (2,3,1);
 
 	INSERT INTO public.letter_fixdata (id,conditions,deleted,finaltext,subject) VALUES
-	 (1,'Comditions',false,'finaltext','subject');
+	 (1,
+	 'Specific conditions required prior to closing include the following: <br> 1) Evidence of Hazard Insurance and Flood Insurance (if required). <br> 2) Satisfactory property appraisal. <br> 3) Clear title work. <br> 4) Any other condition as per the underwriter request. <br><br> We understand that financing your home is one of the most important decisions you will make in your lifetime DG Pinnacle Funding, LLC would like to make your experience as delightful as possible. <br><br> Please feel free to call us if you have any questions on the terms and conditions of this approval. <br><br> Thank you for your business. ',
+	 false,
+	 'Sincerely, <br><br> License No: <br> NMLS ID: <br> Phone: <br>',
+	 'It is with great pride and pleasure that DG Pinnacle Funding, LLC extends to you the pre-approval of your Mortgage Loan. After reviewing your credit report financials, we are able to issue your LOAN PRE-QUALIFICATION with the terms above.');
 
 	 INSERT INTO public.letter_config (id,active,deleted,hoa,insurance,interest,loan_amount,loan_term,loan_type,"location",ltv,max_pay,mi,price,taxes,unique_key,letter_fix_data_id,operation_id) VALUES
 	 (4,true,false,0.0,200.0,3.0,383000.0,360,'FHA','Miramar, 33025',94.0,15000.0,1.5,400000,450.0,'jo8x3hmd',1,1);

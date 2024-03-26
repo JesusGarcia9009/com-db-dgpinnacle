@@ -113,10 +113,10 @@ alter table public.client_operation add constraint fk_client_operation_client fo
 
 CREATE TABLE public.letter_fixdata (
 	id SERIAL NOT NULL,
-	conditions varchar(500) NOT NULL,
+	conditions varchar(1000) NOT NULL,
 	deleted bool NOT NULL,
-	finaltext varchar(500) NOT NULL,
-	subject varchar(500) NOT NULL,
+	finaltext varchar(1000) NOT NULL,
+	subject varchar(1000) NOT NULL,
 	primary key (id)
 );
 
