@@ -9,9 +9,7 @@ CREATE TABLE public.profile (
 CREATE TABLE public.users (
 	id serial NOT NULL,
 	social_security_number varchar(50) NULL,
-	names varchar(50) NOT NULL,
-	middle_name varchar(50) NOT NULL,
-	last_name varchar(50) NULL,
+	fullname varchar(50) NOT NULL,
 	mail varchar(50) NOT NULL,
 	business_position varchar(50) NULL,
 	username varchar(200) NOT NULL,
@@ -27,7 +25,7 @@ alter table public.users add constraint fk_users_profile foreign key (id_profile
 
 
 CREATE TABLE public.broker_company (
-	id int8 NOT NULL,
+	id SERIAL NOT NULL,
 	"name" varchar(40) NOT NULL,
 	phone varchar(50) NOT NULL,
 	physical_add varchar(50) NOT NULL,
@@ -36,7 +34,7 @@ CREATE TABLE public.broker_company (
 );
 
 CREATE TABLE public.client (
-	id int8 NOT NULL,
+	id SERIAL NOT NULL,
 	cellphone varchar(40) NOT NULL,
 	email varchar(50) NOT NULL,
 	last_name varchar(40) NOT NULL,
@@ -45,17 +43,76 @@ CREATE TABLE public.client (
 	primary key (id)
 );
 
-CREATE TABLE public.company (
-	id int8 NOT NULL,
-	mailing_add varchar(50) NOT NULL,
+CREATE TABLE public.loan_officer (
+	id SERIAL NOT NULL,
+	cellphone varchar(20) NOT NULL,
+	email varchar(50) NOT NULL,
+	last_name varchar(36) NOT NULL,
+	mailing_add varchar(75) NOT NULL,
 	"name" varchar(36) NOT NULL,
-	nmls varchar(500) NOT NULL,
-	phisical_add varchar(50) NOT NULL,
+	nmls varchar(50) NOT NULL,
+	primary key (id),
+	CONSTRAINT loan_officer_users FOREIGN KEY (id) REFERENCES public.users(id)
+);
+
+CREATE TABLE public.loan_client (
+	id SERIAL NOT NULL,
+	client_id int8 NOT NULL,
+	loan_id int8 NOT NULL,
 	primary key (id)
 );
 
+alter table public.loan_client add constraint fk_loan_client_loan_officer foreign key (loan_id)  references public.loan_officer(id);
+alter table public.loan_client add constraint fk_loan_client_client foreign key (client_id)  references public.client(id);
+
+CREATE TABLE public.realtor (
+	id SERIAL NOT NULL,
+	cellphone varchar(20) NOT NULL,
+	email varchar(50) NOT NULL,
+	last_name varchar(40) NOT NULL,
+	license_number varchar(20) NOT NULL,
+	mailing_add varchar(500) NULL,
+	"name" varchar(40) NOT NULL,
+	notes varchar(500) NOT NULL,
+	broker_company_id int8 NULL,
+	primary key (id),
+	CONSTRAINT realtor_users FOREIGN KEY (id) REFERENCES public.users(id)
+);
+alter table public.realtor add constraint fk_realtor_broker_company foreign key (broker_company_id)  references public.broker_company(id);
+
+CREATE TABLE public.operation (
+	id SERIAL NOT NULL,
+	"name" varchar(36) NOT NULL,
+	loan_id int8 NOT NULL,
+	primary key (id)
+);
+
+alter table public.operation add constraint fk_operation_loan_officer foreign key (loan_id)  references public.loan_officer(id);
+
+CREATE TABLE public.realtor_operation (
+	id SERIAL NOT NULL,
+	realtor_id int8 NOT NULL,
+	operation_id int8 NOT NULL,
+	primary key (id)
+);
+
+alter table public.realtor_operation add constraint fk_realtor_operation_realtor foreign key (realtor_id)  references public.realtor(id);
+alter table public.realtor_operation add constraint fk_realtor_operation_operation foreign key (operation_id)  references public.operation(id);
+
+
+
+CREATE TABLE public.client_operation (
+	id SERIAL NOT NULL,
+	client_id int8 NOT NULL,
+	operation_id int8 NOT NULL,
+	primary key (id)
+);
+
+alter table public.client_operation add constraint fk_client_operation_operation foreign key (operation_id)  references public.operation(id);
+alter table public.client_operation add constraint fk_client_operation_client foreign key (client_id)  references public.client(id);
+
 CREATE TABLE public.letter_fixdata (
-	id int8 NOT NULL,
+	id SERIAL NOT NULL,
 	conditions varchar(500) NOT NULL,
 	deleted bool NOT NULL,
 	finaltext varchar(500) NOT NULL,
@@ -63,14 +120,8 @@ CREATE TABLE public.letter_fixdata (
 	primary key (id)
 );
 
-CREATE TABLE public.operation (
-	id int8 NOT NULL,
-	"name" varchar(36) NOT NULL,
-	primary key (id)
-);
-
 CREATE TABLE public.letter_config (
-	id int8 NOT NULL,
+	id SERIAL NOT NULL,
 	active bool NULL,
 	deleted bool NULL,
 	hoa float8 NOT NULL,
@@ -101,72 +152,13 @@ CREATE TABLE public.letter_config (
 alter table public.letter_config add constraint fk_letter_config_operation foreign key (operation_id)  references public.operation(id);
 alter table public.letter_config add constraint fk_letter_config_letter_fix_data foreign key (letter_fix_data_id)  references public.letter_fixdata(id);
 
-CREATE TABLE public.loan_officer (
-	id int8 NOT NULL,
-	cellphone varchar(20) NOT NULL,
-	email varchar(50) NOT NULL,
-	last_name varchar(36) NOT NULL,
-	mailing_add varchar(75) NOT NULL,
-	"name" varchar(36) NOT NULL,
-	nmls varchar(50) NOT NULL,
-	company_id int8 NULL,
-	primary key (id)
-);
-alter table public.loan_officer add constraint fk_loan_officer_company foreign key (company_id)  references public.company(id);
-
-CREATE TABLE public.realtor (
-	id int8 NOT NULL,
-	cellphone varchar(20) NOT NULL,
-	email varchar(50) NOT NULL,
-	last_name varchar(40) NOT NULL,
-	license_number varchar(20) NOT NULL,
-	mailing_add varchar(500) NULL,
-	"name" varchar(40) NOT NULL,
-	notes varchar(500) NOT NULL,
-	broker_company_id int8 NULL,
-	primary key (id)
-);
-alter table public.realtor add constraint fk_realtor_broker_company foreign key (broker_company_id)  references public.broker_company(id);
-
-CREATE TABLE public.company_realtor (
-	id int8 NOT NULL,
-	company_id int8 NOT NULL,
-	realtor_id int8 NOT NULL,
-	primary key (id)
-);
-alter table public.company_realtor add constraint fk_company_realtor_company foreign key (company_id)  references public.company(id);
-alter table public.company_realtor add constraint fk_company_realtor_realtor foreign key (realtor_id)  references public.realtor(id);
-
-CREATE TABLE public.company_realtor_operation (
-	id int8 NOT NULL,
-	company_realtor_id int8 NOT NULL,
-	operation_id int8 NOT NULL,
-	primary key (id)
-);
-
-alter table public.company_realtor_operation add constraint fk_company_realtor_operation_company_realtor foreign key (company_realtor_id)  references public.company_realtor(id);
-alter table public.company_realtor_operation add constraint fk_company_realtor_operation_operation foreign key (operation_id)  references public.operation(id);
-
-CREATE TABLE public.loan_client (
-	id int8 NOT NULL,
-	client_id int8 NOT NULL,
-	loan_id int8 NOT NULL,
-	primary key (id)
-);
-
-alter table public.loan_client add constraint fk_loan_client_loan_officer foreign key (loan_id)  references public.loan_officer(id);
-alter table public.loan_client add constraint fk_loan_client_client foreign key (client_id)  references public.client(id);
 
 
-CREATE TABLE public.loan_client_operation (
-	id int8 NOT NULL,
-	loan_client_id int8 NOT NULL,
-	operation_id int8 NOT NULL,
-	primary key (id)
-);
 
-alter table public.loan_client_operation add constraint fk_loan_client_operation_operation foreign key (operation_id)  references public.operation(id);
-alter table public.loan_client_operation add constraint fk_loan_client_operation_loan_client foreign key (loan_client_id)  references public.loan_client(id);
+
+
+
+
 
 
 
